@@ -1,0 +1,5 @@
+credenciales.json
+*.json
+_pycache_/
+.venv/
+*.png.

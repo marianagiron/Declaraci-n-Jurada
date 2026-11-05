@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard PROSIP</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/estilo.css') }}">
+</head>
+<body>
+    <main class="contenedor">
+        <header class="encabezado">
+            <div class="marca">
+                <div class="logo">P</div>
+                <div>
+                    <h1>PROSIP</h1>
+                    <p>Sistema de Declaraciones Juradas</p>
+                </div>
+            </div>
+            <h2>Panel de control</h2>
+            <p>Registro, análisis y control de gastos declarados</p>
+        </header>
+
+        {% if error %}
+        <div class="alerta">
+            <strong>No se pudieron cargar los datos.</strong>
+            <p>{{ error }}</p>
+            <p>Revisa la conexión a Google Sheets y los nombres de las columnas.</p>
+        </div>
+        {% else %}
+
+        <section class="tarjetas">
+            <article class="tarjeta">
+                <div class="icono azul">▤</div>
+                <p>Total de declaraciones</p>
+                <h2>{{ total_registros }}</h2>
+                <span>Registros de la hoja</span>
+            </article>
+
+            <article class="tarjeta">
+                <div class="icono verde">S/</div>
+                <p>Importe total declarado</p>
+                <h2>S/ {{ "{:,.2f}".format(total_importe) }}</h2>
+                <span>Suma de importes válidos</span>
+            </article>
+
+            <article class="tarjeta">
+                <div class="icono turquesa">▦</div>
+                <p>Proyectos registrados</p>
+                <h2>{{ proyectos|length }}</h2>
+                <span>Proyectos diferentes</span>
+            </article>
+
+            <article class="tarjeta">
+                <div class="icono naranja">◎</div>
+                <p>Centros de costo</p>
+                <h2>{{ centros|length }}</h2>
+                <span>Centros identificados</span>
+            </article>
+        </section>
+
+        <section class="graficos">
+            <article class="panel">
+                <h3>Declaraciones por proyecto</h3>
+                {% if grafico_proyectos %}
+                <img src="data:image/png;base64,{{ grafico_proyectos }}"
+                     alt="Gráfico de declaraciones por proyecto">
+                {% else %}
+                <p>No hay datos para mostrar.</p>
+                {% endif %}
+            </article>
+
+            <article class="panel">
+                <h3>Importes por centro de costo</h3>
+                {% if grafico_centros %}
+                <img src="data:image/png;base64,{{ grafico_centros }}"
+                     alt="Gráfico de importes por centro de costo">
+                {% else %}
+                <p>No hay datos para mostrar.</p>
+                {% endif %}
+            </article>
+
+            <article class="panel">
+                <h3>Declaraciones por solicitante</h3>
+                {% if grafico_solicitantes %}
+                <img src="data:image/png;base64,{{ grafico_solicitantes }}"
+                     alt="Gráfico por solicitante">
+                {% else %}
+                <p>No hay datos para mostrar.</p>
+                {% endif %}
+            </article>
+
+            <article class="panel">
+                <h3>Declaraciones por mes</h3>
+                {% if grafico_meses %}
+                <img src="data:image/png;base64,{{ grafico_meses }}"
+                     alt="Gráfico por mes">
+                {% else %}
+                <p>No hay datos para mostrar.</p>
+                {% endif %}
+            </article>
+        </section>
+
+        <section class="panel">
+            <h3>Declaraciones por proyecto</h3>
+            <div class="tabla-contenedor">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Proyecto</th>
+                            <th>Cantidad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fila in proyectos %}
+                        <tr>
+                            <td>{{ fila["Proyecto"] }}</td>
+                            <td>{{ fila["Cantidad"] }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="2">Sin registros.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h3>Importes por centro de costo</h3>
+            <div class="tabla-contenedor">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Centro de costo</th>
+                            <th>Importe total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fila in importes_centro %}
+                        <tr>
+                            <td>{{ fila["Centro de costo"] }}</td>
+                            <td>S/ {{ "{:,.2f}".format(fila["Importe total"]) }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="2">Sin registros.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h3>Declaraciones por solicitante</h3>
+            <div class="tabla-contenedor">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Solicitante</th>
+                            <th>Cantidad de declaraciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fila in solicitantes %}
+                        <tr>
+                            <td>{{ fila["Solicitante"] }}</td>
+                            <td>{{ fila["Cantidad"] }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="2">Sin registros.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <footer>
+            PROSIP · Dashboard de Declaraciones Juradas
+        </footer>
+
+        {% endif %}
+    </main>
+</body>
+</html>
